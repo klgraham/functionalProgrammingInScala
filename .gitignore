@@ -1,0 +1,11 @@
+.classpath
+.project
+.settings
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project
+submission
