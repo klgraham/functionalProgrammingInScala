@@ -19,7 +19,7 @@ abstract class TweetSet {
   def filter(p: Tweet => Boolean): TweetSet = ???
   def filter0(p: Tweet => Boolean, accu: TweetSet): TweetSet
 
-  def union(that: TweetSet): TweetSet = ???
+  def union(that: TweetSet): TweetSet
 
   // Hint: the method "remove" on TweetSet will be very useful.
   def ascendingByRetweet: Trending = ???
@@ -56,6 +56,8 @@ abstract class TweetSet {
 class Empty extends TweetSet {
 
   def filter0(p: Tweet => Boolean, accu: TweetSet): TweetSet = ???
+
+  def union(other: TweetSet): TweetSet = other
 
   // The following methods are provided for you, and do not have to be changed
   // -------------------------------------------------------------------------
@@ -94,6 +96,9 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     else if (elem.text < tw.text) new NonEmpty(elem, left, right.remove(tw))
     else left.union(right)
   // -------------------------------------------------------------------------
+
+  def union(other: TweetSet): TweetSet = 
+    ((left union right) union other) incl elem
 }
 
 
