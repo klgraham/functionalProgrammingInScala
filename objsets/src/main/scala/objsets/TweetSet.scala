@@ -24,7 +24,18 @@ abstract class TweetSet {
   def union(that: TweetSet): TweetSet
 
   // Hint: the method "remove" on TweetSet will be very useful.
-  def ascendingByRetweet: Trending = ???
+  def ascendingByRetweet: Trending = {
+    // find the tweet with fewest retweets, remove it
+    // add that tweet to the Trending list
+    def findMinAndAdd(tw: TweetSet, accum: Trending): Trending = {
+      if (!tw.isEmpty) {
+        val min = tw.findMin
+        findMinAndAdd(tw.remove(min), accum + min)
+      }
+      else accum
+    }
+    findMinAndAdd(this, new EmptyTrending) 
+  }
 
   // The following methods are provided for you, and do not have to be changed
   // -------------------------------------------------------------------------
