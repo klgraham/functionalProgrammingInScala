@@ -87,8 +87,13 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def filter0(p: Tweet => Boolean, accu: TweetSet): TweetSet = 
     if (!this.isEmpty) {
-      if (!p(elem)) tail.filter0(p, accu)
-      else tail.filter0(p, accu incl elem)
+      // traverse left
+      val filteredLeft = left.filter0(p, if (!p(elem)) accu else accu.incl(elem))
+      val filteredRight = right.filter0(p, if (!p(elem)) accu else accu.incl(elem))
+      if (!p(elem)) 
+        filteredLeft union filteredRight 
+      else
+        (filteredLeft union filteredRight) incl elem
     }
     else accu
 
@@ -156,20 +161,27 @@ class NonEmptyTrending(elem: Tweet, next: Trending) extends Trending {
 }
 
 object GoogleVsApple {
-  val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
-  
+  val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")  
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  val googleTweets: TweetSet = ???
+  def tweetContains(words: List[String], tweet: String): Boolean = {
+    val results = for (w <- words) yield tweet.contains(w)
+    results.toList.contains(true)
+  }
 
-  val appleTweets: TweetSet = ???
+  val googleTweets: TweetSet = 
+    TweetReader.allTweets.filter(tweet => tweetContains(google, tweet.text))
+
+  val appleTweets: TweetSet = 
+    TweetReader.allTweets.filter(tweet => tweetContains(apple, tweet.text))
 
   // Q: from both sets, what is the tweet with highest #retweets?
-  val trending: Trending = ???
+  val trending: Trending = 
+    (googleTweets union appleTweets).ascendingByRetweet
 }
 
 object Main extends App {
   // Some help printing the results:
-  // println("RANKED:")
-  // GoogleVsApple.trending foreach println
+  println("RANKED:")
+  GoogleVsApple.trending foreach println
 }
