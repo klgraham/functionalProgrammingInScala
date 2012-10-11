@@ -2,6 +2,7 @@ package objsets
 
 import common._
 import TweetReader._
+import scala.annotation.tailrec
 
 class Tweet(val user: String, val text: String, val retweets: Int) {
 
@@ -85,17 +86,7 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
-  def filter0(p: Tweet => Boolean, accu: TweetSet): TweetSet = 
-    if (!this.isEmpty) {
-      // traverse left
-      val filteredLeft = left.filter0(p, if (!p(elem)) accu else accu.incl(elem))
-      val filteredRight = right.filter0(p, if (!p(elem)) accu else accu.incl(elem))
-      if (!p(elem)) 
-        filteredLeft union filteredRight 
-      else
-        (filteredLeft union filteredRight) incl elem
-    }
-    else accu
+  
 
   // The following methods are provided for you, and do not have to be changed
   // -------------------------------------------------------------------------
@@ -120,8 +111,23 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     else left.union(right)
   // -------------------------------------------------------------------------
 
-  def union(other: TweetSet): TweetSet = 
-    ((left union right) union other) incl elem
+  // @tailrec
+  final def union(other: TweetSet): TweetSet = 
+    if (other.isEmpty) this
+    else (other.tail union this) incl other.head
+
+  // @tailrec 
+  final def filter0(p: Tweet => Boolean, accu: TweetSet): TweetSet = 
+    if (!this.isEmpty) {
+      // traverse left
+      val filteredLeft = left.filter0(p, if (!p(elem)) accu else accu.incl(elem))
+      val filteredRight = right.filter0(p, if (!p(elem)) accu else accu.incl(elem))
+      if (!p(elem)) 
+        filteredLeft union filteredRight 
+      else
+        (filteredLeft union filteredRight) incl this.elem
+    }
+    else accu
 }
 
 
@@ -169,8 +175,9 @@ object GoogleVsApple {
     results.toList.contains(true)
   }
 
-  val googleTweets: TweetSet = 
+    val googleTweets: TweetSet = 
     TweetReader.allTweets.filter(tweet => tweetContains(google, tweet.text))
+  
 
   val appleTweets: TweetSet = 
     TweetReader.allTweets.filter(tweet => tweetContains(apple, tweet.text))
@@ -180,8 +187,8 @@ object GoogleVsApple {
     (googleTweets union appleTweets).ascendingByRetweet
 }
 
-object Main extends App {
-  // Some help printing the results:
-  println("RANKED:")
-  GoogleVsApple.trending foreach println
-}
+// object Main extends App {
+//   // Some help printing the results:
+//   println("RANKED:")
+//   GoogleVsApple.trending foreach println
+// }
