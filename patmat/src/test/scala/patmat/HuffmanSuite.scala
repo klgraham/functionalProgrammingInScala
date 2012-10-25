@@ -14,6 +14,10 @@ class HuffmanSuite extends FunSuite {
     val t2 = Fork(Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5), Leaf('d',4), List('a','b','d'), 9)
   }
 
+  trait Letters {
+    val chars: List[Char] = List('a', 'a', 'a', 'b', 'b', 'b', 'c', 'c', 'd')
+  }
+
   test("weight of a larger tree") {
     new TestTrees {
       assert(weight(t1) === 5)
@@ -23,6 +27,13 @@ class HuffmanSuite extends FunSuite {
   test("chars of a larger tree") {
     new TestTrees {
       assert(chars(t2) === List('a','b','d'))
+    }
+  }
+
+  test("get char counts") {
+    new Letters {
+      val charCounts = List(('c', 2), ('a', 3), ('d', 1), ('b', 3))
+      assert(times(chars) == charCounts, times(chars).toString)
     }
   }
 
