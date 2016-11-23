@@ -85,7 +85,12 @@ object Anagrams {
   }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+      val occurrences = wordOccurrences(word)
+      val anagrams = dictionaryByOccurrences.get(occurrences)
+      if (anagrams.isDefined) anagrams.get
+      else List()
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -110,6 +115,14 @@ object Anagrams {
    *  in the example above could have been displayed in some other order.
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  // {
+  //     List() ++ 
+  //     for (
+  //         occ1 <- occurrences
+  //         occ2 <- occurrences
+  //         if 
+  //     )
+  // }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
